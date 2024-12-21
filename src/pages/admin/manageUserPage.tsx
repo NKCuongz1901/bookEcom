@@ -1,7 +1,8 @@
+import TableUser from "@/components/admin/user/table.user";
 
 const ManageUserPage = () => {
     return (
-        <div>Manage user page</div>
+        <TableUser />
     )
 }
 export default ManageUserPage;

@@ -9,7 +9,7 @@ import LoginPage from 'pages/client/auth/loginPage.tsx';
 import RegisterPage from 'pages/client/auth/registerPage';
 import 'styles/global.scss'
 import HomePage from 'pages/client/auth/homePage';
-import { App } from 'antd';
+import { App, ConfigProvider } from 'antd';
 import { AppProvider } from 'components/context/app.context';
 import ProtectedRoute from './components/protectedPage/protectedRoute';
 import LayoutAdmin from './components/layout/layout.admin';
@@ -17,7 +17,7 @@ import DashBoardPage from './pages/admin/dashBoardPage';
 import ManageBookPage from './pages/admin/manageBookPage';
 import ManageOrderPage from './pages/admin/manageOrderPage';
 import ManageUserPage from './pages/admin/manageUserPage';
-
+import enUS from 'antd/locale/en_US';
 
 const router = createBrowserRouter([
   {
@@ -111,7 +111,9 @@ createRoot(document.getElementById('root')!).render(
     {/* <Layout /> */}
     <App>
       <AppProvider>
-        <RouterProvider router={router} />
+        <ConfigProvider locale={enUS}>
+          <RouterProvider router={router} />
+        </ConfigProvider>
       </AppProvider>
     </App>
   </StrictMode>,
