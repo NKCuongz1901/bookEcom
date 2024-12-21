@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import './login.scss'
 import { loginAPI } from "@/services/api";
+import { useCurrentApp } from "@/components/context/app.context";
 
 
 type FieldType = {
@@ -11,6 +12,7 @@ type FieldType = {
     password: string;
 }
 const LoginPage = () => {
+    const { setIsAuthenticated, setUser } = useCurrentApp();
     const [isSubmit, setIsSubmit] = useState(false);
     const navigate = useNavigate();
     const { message, notification } = App.useApp()
@@ -19,6 +21,8 @@ const LoginPage = () => {
         const { username, password } = values;
         const res = await loginAPI(username, password);
         if (res.data) {
+            setIsAuthenticated(true);
+            setUser(res.data.user);
             localStorage.setItem('access_token', res.data.access_token);
             message.success("Login success");
             navigate('/');

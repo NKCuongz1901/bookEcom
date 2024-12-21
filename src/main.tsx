@@ -10,6 +10,8 @@ import RegisterPage from 'pages/client/auth/registerPage';
 import 'styles/global.scss'
 import HomePage from 'pages/client/auth/homePage';
 import { App } from 'antd';
+import { AppProvider } from 'components/context/app.context';
+import ProtectedRoute from './components/protectedPage/protectedRoute';
 
 
 const router = createBrowserRouter([
@@ -25,6 +27,20 @@ const router = createBrowserRouter([
       {
         path: "/order",
         element: <div>order page</div>,
+      },
+      {
+        path: "/checkout",
+        element:
+          <ProtectedRoute>
+            (<div>checkout page</div>),
+          </ProtectedRoute>
+      },
+      {
+        path: "/admin",
+        element:
+          <ProtectedRoute>
+            (<div>admin page</div>) ,
+          </ProtectedRoute>
       },
     ]
   },
@@ -42,7 +58,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     {/* <Layout /> */}
     <App>
-      <RouterProvider router={router} />
+      <AppProvider>
+        <RouterProvider router={router} />
+      </AppProvider>
     </App>
   </StrictMode>,
 )
