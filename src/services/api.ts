@@ -25,3 +25,16 @@ export const getUserPaginateAPI = (query: string) => {
     const urlBackend = `/api/v1/user?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
 }
+export const createUserAPI = (fullName: string, password: string, email: string, phone: string) => {
+    const urlBackend = "/api/v1/user";
+    return axios.post<IBackendRes<IRegister>>(urlBackend, { fullName, password, email, phone });
+}
+export const createListUserAPI = (data: {
+    fullName: string;
+    password: string;
+    email: string;
+    phone: string;
+}[]) => {
+    const urlBackend = "/api/v1/user/bulk-create";
+    return axios.post<IBackendRes<IImport>>(urlBackend, data)
+}

@@ -72,5 +72,10 @@ declare global {
         createdAt: Date;
         updatedAt: Date;
     }
+    interface IImport {
+        countSuccess: number;
+        countError: number;
+        detail: any;
+    }
 
 }
