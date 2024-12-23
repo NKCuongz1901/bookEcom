@@ -7,59 +7,11 @@ import { Button, Space, Tag } from 'antd';
 import { useRef, useState } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { MdDelete } from 'react-icons/md';
+import DetailUser from './detail.user';
 
 
 
-const columns: ProColumns<IUserTable>[] = [
-    {
-        dataIndex: 'index',
-        valueType: 'indexBorder',
-        width: 48,
-    },
-    {
-        title: 'ID',
-        dataIndex: '_id',
-        hideInSearch: true,
-        render(dom, entity, index, action, schema) {
-            return (<a href='#'>{entity._id}</a>)
-        },
-    },
-    {
-        title: 'Full Name',
-        dataIndex: 'fullName',
-    },
-    {
-        title: 'Email',
-        dataIndex: 'email',
-    },
-    {
-        title: 'Created At',
-        dataIndex: 'createdAt',
-        hideInSearch: true,
-        valueType: 'date',
-        sorter: true,
 
-    },
-    {
-        title: 'Created At',
-        dataIndex: 'createdAtRange',
-        hideInTable: true,
-        valueType: 'dateRange',
-    },
-    {
-        title: 'Action',
-        hideInSearch: true,
-        render(dom, entity, index, action, schema) {
-            return (
-                <div style={{ display: 'flex', gap: '5px' }}>
-                    <MdDelete style={{ cursor: 'pointer' }} />
-                    <CiEdit style={{ cursor: 'pointer' }} />
-                </div>
-            )
-        },
-    }
-
-];
 type TSearch = {
     fullName: string;
     email: string;
@@ -68,12 +20,70 @@ type TSearch = {
 }
 const TableUser = () => {
     const actionRef = useRef<ActionType>();
+    const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
+    const [dataViewDetail, setDataViewDetail] = useState<IUserTable | null>(null);
     const [meta, setMeta] = useState({
         current: 1,
         pageSize: 5,
         pages: 0,
         total: 0
     });
+
+    const columns: ProColumns<IUserTable>[] = [
+        {
+            dataIndex: 'index',
+            valueType: 'indexBorder',
+            width: 48,
+        },
+        {
+            title: 'ID',
+            dataIndex: '_id',
+            hideInSearch: true,
+            render(dom, entity, index, action, schema) {
+                return (<a href='#'
+                    onClick={() => {
+                        setDataViewDetail(entity);
+                        setOpenViewDetail(true);
+                    }}
+                >{entity._id}</a>)
+            },
+        },
+        {
+            title: 'Full Name',
+            dataIndex: 'fullName',
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAt',
+            hideInSearch: true,
+            valueType: 'date',
+            sorter: true,
+
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAtRange',
+            hideInTable: true,
+            valueType: 'dateRange',
+        },
+        {
+            title: 'Action',
+            hideInSearch: true,
+            render(dom, entity, index, action, schema) {
+                return (
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                        <MdDelete style={{ cursor: 'pointer' }} />
+                        <CiEdit style={{ cursor: 'pointer' }} />
+                    </div>
+                )
+            },
+        }
+
+    ];
     return (
         <>
             <ProTable<IUserTable, TSearch>
@@ -135,6 +145,12 @@ const TableUser = () => {
                     </Button>
 
                 ]}
+            />
+            <DetailUser
+                openViewDetail={openViewDetail}
+                setOpenViewDetail={setOpenViewDetail}
+                dataViewDetail={dataViewDetail}
+                setDataViewDetail={setDataViewDetail}
             />
         </>
     );
