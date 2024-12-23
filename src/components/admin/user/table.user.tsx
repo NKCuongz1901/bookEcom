@@ -1,9 +1,12 @@
 import { getUserPaginateAPI } from '@/services/api';
+import { dateRangeValidate } from '@/services/helper';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Button, Space, Tag } from 'antd';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { CiEdit } from 'react-icons/ci';
+import { MdDelete } from 'react-icons/md';
 
 
 
@@ -14,6 +17,14 @@ const columns: ProColumns<IUserTable>[] = [
         width: 48,
     },
     {
+        title: 'ID',
+        dataIndex: '_id',
+        hideInSearch: true,
+        render(dom, entity, index, action, schema) {
+            return (<a href='#'>{entity._id}</a>)
+        },
+    },
+    {
         title: 'Full Name',
         dataIndex: 'fullName',
     },
@@ -22,38 +33,94 @@ const columns: ProColumns<IUserTable>[] = [
         dataIndex: 'email',
     },
     {
-        title: 'Phone',
-        dataIndex: 'phone',
+        title: 'Created At',
+        dataIndex: 'createdAt',
+        hideInSearch: true,
+        valueType: 'date',
+        sorter: true,
+
     },
     {
         title: 'Created At',
-        dataIndex: 'createdAt',
+        dataIndex: 'createdAtRange',
+        hideInTable: true,
+        valueType: 'dateRange',
+    },
+    {
+        title: 'Action',
+        hideInSearch: true,
+        render(dom, entity, index, action, schema) {
+            return (
+                <div style={{ display: 'flex', gap: '5px' }}>
+                    <MdDelete style={{ cursor: 'pointer' }} />
+                    <CiEdit style={{ cursor: 'pointer' }} />
+                </div>
+            )
+        },
     }
-];
 
+];
+type TSearch = {
+    fullName: string;
+    email: string;
+    createdAt: string;
+    createdAtRange: string
+}
 const TableUser = () => {
     const actionRef = useRef<ActionType>();
+    const [meta, setMeta] = useState({
+        current: 1,
+        pageSize: 5,
+        pages: 0,
+        total: 0
+    });
     return (
         <>
-            <ProTable<IUserTable>
+            <ProTable<IUserTable, TSearch>
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
+
                 request={async (params, sort, filter) => {
-                    const res = await getUserPaginateAPI()
+                    let query = "";
+                    if (params) {
+                        query += `current=${params.current}&pageSize=${params.pageSize}`;
+                        if (params.fullName) {
+                            query += `&fullName=/${params.fullName}/i`;
+                        }
+                        if (params.email) {
+                            query += `&email=/${params.email}/i`;
+                        }
+                        const createDateRange = dateRangeValidate(params.createdAtRange);
+                        if (createDateRange) {
+                            query += `&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`;
+                        }
+                    }
+                    if (sort && sort.createdAt) {
+                        query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`;
+                    }
+                    const res = await getUserPaginateAPI(query);
+                    if (res.data) {
+                        setMeta(res.data.meta);
+                    }
                     return {
                         data: res.data?.result,
-                        "page": 1,
-                        "success": true,
-                        "total": res.data?.meta.total,
+                        page: 1,
+                        success: true,
+                        total: res.data?.meta.total,
                     }
 
                 }}
-                rowKey="id"
-                pagination={{
-                    pageSize: 5,
-                    onChange: (page) => console.log(page),
-                }}
+                rowKey="_id"
+                pagination={
+                    {
+                        current: meta.current,
+                        pageSize: meta.pageSize,
+                        showSizeChanger: true,
+                        total: meta.total,
+                        showTotal: (total, range) => { return (<div>{range[0]}-{range[1]} trên {total} rows</div>) }
+                    }
+                }
                 headerTitle="Table user"
                 toolBarRender={() => [
                     <Button
