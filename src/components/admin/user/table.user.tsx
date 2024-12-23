@@ -11,6 +11,7 @@ import DetailUser from './detail.user';
 import CreateUser from './create.user';
 import ImportUser from './import.user';
 import { CSVLink } from "react-csv";
+import UpdateUser from './update.user';
 
 
 
@@ -27,6 +28,8 @@ const TableUser = () => {
     const [openViewAdd, setOpenViewAdd] = useState<boolean>(false);
     const [openViewImport, setOpenViewImport] = useState<boolean>(false);
     const [currentData, setCurrentData] = useState<IUserTable[]>([]);
+    const [openViewUpdate, setOpenViewUpdate] = useState<boolean>(false);
+    const [updateData, setUpdateData] = useState<IUserTable | null>(null);
     const [meta, setMeta] = useState({
         current: 1,
         pageSize: 5,
@@ -82,7 +85,7 @@ const TableUser = () => {
                 return (
                     <div style={{ display: 'flex', gap: '5px' }}>
                         <MdDelete style={{ cursor: 'pointer' }} />
-                        <CiEdit style={{ cursor: 'pointer' }} />
+                        <CiEdit style={{ cursor: 'pointer' }} onClick={() => { setOpenViewUpdate(true), setUpdateData(entity) }} />
                     </div>
                 )
             },
@@ -183,6 +186,14 @@ const TableUser = () => {
             <ImportUser
                 openViewImport={openViewImport}
                 setOpenViewImport={setOpenViewImport}
+                refreshTable={refreshTable}
+
+            />
+            <UpdateUser
+                openViewUpdate={openViewUpdate}
+                setOpenViewUpdate={setOpenViewUpdate}
+                updateData={updateData}
+                setUpdateData={setUpdateData}
                 refreshTable={refreshTable}
 
             />
