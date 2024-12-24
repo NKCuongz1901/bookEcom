@@ -1,9 +1,9 @@
-import { getUserPaginateAPI } from '@/services/api';
+import { deleteUserAPI, getUserPaginateAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
 import { ExportOutlined, ImportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Space, Tag } from 'antd';
+import { App, Button, Popconfirm, Space, Tag } from 'antd';
 import { useRef, useState } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { MdDelete } from 'react-icons/md';
@@ -36,7 +36,7 @@ const TableUser = () => {
         pages: 0,
         total: 0
     });
-
+    const { message, notification } = App.useApp();
     const columns: ProColumns<IUserTable>[] = [
         {
             dataIndex: 'index',
@@ -84,7 +84,16 @@ const TableUser = () => {
             render(dom, entity, index, action, schema) {
                 return (
                     <div style={{ display: 'flex', gap: '5px' }}>
-                        <MdDelete style={{ cursor: 'pointer' }} />
+                        <Popconfirm
+                            title="Delete the task"
+                            description="Are you sure to delete this task?"
+                            onConfirm={() => { handleDeleteUser(entity._id) }}
+                            okText="Yes"
+                            cancelText="No"
+
+                        >
+                            <MdDelete style={{ cursor: 'pointer' }} />
+                        </Popconfirm>
                         <CiEdit style={{ cursor: 'pointer' }} onClick={() => { setOpenViewUpdate(true), setUpdateData(entity) }} />
                     </div>
                 )
@@ -94,6 +103,17 @@ const TableUser = () => {
     ];
     const refreshTable = () => {
         actionRef?.current?.reload();
+    }
+    const handleDeleteUser = async (_id: any) => {
+        const res = await deleteUserAPI(_id);
+        if (res && res.data) {
+            message.success("Delete user success");
+            refreshTable();
+        } else {
+            notification.error({
+                message: 'Error'
+            })
+        }
     }
     return (
         <>
@@ -195,7 +215,6 @@ const TableUser = () => {
                 updateData={updateData}
                 setUpdateData={setUpdateData}
                 refreshTable={refreshTable}
-
             />
         </>
     );

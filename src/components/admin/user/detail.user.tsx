@@ -19,7 +19,7 @@ const DetailUser = (props: IProps) => {
             width={'55vw'}
         >
             <Descriptions
-                title={`detail user ${dataViewDetail?.fullName}`}
+                title={`Detail user ${dataViewDetail?.fullName}`}
                 bordered
                 column={2}
             >
