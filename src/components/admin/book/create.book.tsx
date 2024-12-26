@@ -1,10 +1,11 @@
-import { getCategoryAPI } from "@/services/api";
-import { Col, Form, Image, Input, InputNumber, Modal, Row, Select, Upload, message } from "antd";
+import { createBookAPI, getCategoryAPI, uploadFileAPI } from "@/services/api";
+import { Col, Form, Image, Input, InputNumber, Modal, Row, Select, Upload, message, notification } from "antd";
 import { useEffect, useState } from "react";
 import type { FormProps, GetProp, UploadProps, UploadFile } from 'antd';
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 import { UploadChangeParam } from 'antd/es/upload';
+import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 interface TProps {
     openCreateView: boolean;
     setOpenCreateView: (v: boolean) => void;
@@ -20,7 +21,7 @@ type FieldType = {
     thumbnail: any;
     slider: any;
 };
-
+type UserUploadFile = "thumbnail" | "slider"
 const CreateBook = (props: TProps) => {
     const [form] = Form.useForm();
     const { openCreateView, setOpenCreateView, refreshTable } = props;
@@ -32,8 +33,26 @@ const CreateBook = (props: TProps) => {
     const [loadingSlider, setLoadingSlider] = useState<boolean>(false);
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [previewImage, setPreviewImage] = useState<string>('');
-    const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-        console.log("Check values: ", values);
+    const [fileListThumbnail, setFileListThumbnail] = useState<UploadFile[]>([]);
+    const [fileListSlider, setFileListSlider] = useState<UploadFile[]>([]);
+
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+        const { mainText, author, price, quantity, category } = values;
+        const thumbnail = fileListThumbnail?.[0]?.name ?? '';
+        const slider = fileListSlider.map(item => item.name ?? []);
+        const res = await createBookAPI(mainText, author, price, quantity, category, thumbnail, slider);
+        if (res && res.data) {
+            message.success("Add new book success");
+            setOpenCreateView(false);
+            setFileListThumbnail([]);
+            setFileListSlider([]);
+            form.resetFields();
+            refreshTable();
+        } else {
+            notification.error({
+                message: 'Error'
+            })
+        }
     }
 
     useEffect(() => {
@@ -67,7 +86,7 @@ const CreateBook = (props: TProps) => {
         if (!isLt2M) {
             message.error('Image must smaller than 2MB!');
         }
-        return isJpgOrPng && isLt2M;
+        return isJpgOrPng && isLt2M || Upload.LIST_IGNORE;
     };
 
     //Change upload
@@ -82,12 +101,29 @@ const CreateBook = (props: TProps) => {
         }
     };
 
-    const handleUploadFile: UploadProps['customRequest'] = ({ file, onSuccess, onError }) => {
-        setTimeout(() => {
-            if (onSuccess)
-                onSuccess("ok");
-        }, 1000);
-    };
+    const handleUploadFile = async (options: RcCustomRequestOptions, type: UserUploadFile) => {
+        const { onSuccess } = options;
+        const file = options.file as UploadFile;
+        const res = await uploadFileAPI(file, 'book');
+        if (res && res.data) {
+            const uploadFile: any = {
+                uid: file.uid,
+                name: res.data.fileUploaded,
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${res.data.fileUploaded}`
+            }
+            if (type === 'thumbnail') {
+                setFileListThumbnail([{ ...uploadFile }]);
+            } else {
+                setFileListSlider((prevState) => [...prevState, { ...uploadFile }]);
+            }
+        }
+        if (onSuccess) {
+            onSuccess('ok');
+        } else {
+            message.error(res.message);
+        }
+    }
 
     //Preview upload file
     const handlePreview = async (file: UploadFile) => {
@@ -104,12 +140,21 @@ const CreateBook = (props: TProps) => {
         }
         return e?.fileList;
     };
+    const handleRemove = async (file: UploadFile, type: UserUploadFile) => {
+        if (type === 'thumbnail') {
+            setFileListThumbnail([])
+        }
+        if (type === 'slider') {
+            const newSlider = fileListSlider.filter(x => x.uid !== file.uid);
+            setFileListSlider(newSlider);
+        }
+    };
     return (
         <>
             <Modal
                 title="Add new book"
                 open={openCreateView}
-                onCancel={() => { setOpenCreateView(false), form.resetFields() }}
+                onCancel={() => { setOpenCreateView(false), form.resetFields(), setFileListSlider([]), setFileListThumbnail([]) }}
                 okText="Add new"
                 onOk={() => { form.submit() }}
                 width={"50vw"}
@@ -195,10 +240,12 @@ const CreateBook = (props: TProps) => {
                                     className="avatar-uploader"
                                     maxCount={1}
                                     multiple={false}
-                                    customRequest={handleUploadFile}
+                                    customRequest={(options) => handleUploadFile(options, 'thumbnail')}
                                     beforeUpload={beforeUpload}
                                     onChange={(info) => handleChange(info, 'thumbnail')}
                                     onPreview={handlePreview}
+                                    onRemove={(file) => handleRemove(file, 'thumbnail')}
+                                    fileList={fileListThumbnail}
                                 >
                                     <div>
                                         {loadingThumbnail ? <LoadingOutlined /> : <PlusOutlined />}
@@ -221,9 +268,11 @@ const CreateBook = (props: TProps) => {
                                     multiple
                                     listType="picture-card"
                                     className="avatar-uploader"
-                                    customRequest={handleUploadFile}
+                                    customRequest={(options) => handleUploadFile(options, 'slider')}
                                     beforeUpload={beforeUpload}
                                     onChange={(info) => handleChange(info, 'slider')}
+                                    onRemove={(file) => handleRemove(file, 'slider')}
+                                    fileList={fileListSlider}
                                     onPreview={handlePreview}
                                 >
                                     <div>
