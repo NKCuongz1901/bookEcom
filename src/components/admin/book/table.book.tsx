@@ -7,6 +7,7 @@ import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import dayjs from "dayjs";
 import DetailBook from "./detail.book";
+import CreateBook from "./create.book";
 
 
 type TSearch = {
@@ -24,6 +25,7 @@ const TableBook = () => {
     });
     const [openDetailView, setOpenDetailView] = useState<boolean>(false);
     const [detailData, setDetailData] = useState<IBookTable | null>(null);
+    const [openCreateView, setOpenCreateView] = useState<boolean>(false);
     const columns: ProColumns<IBookTable>[] = [
         {
             dataIndex: 'index',
@@ -95,7 +97,10 @@ const TableBook = () => {
             },
         }
     ]
+    const refreshTable = () => {
+        actionRef?.current?.reload();
 
+    }
     return (
         <>
             <ProTable<IBookTable, TSearch>
@@ -109,6 +114,7 @@ const TableBook = () => {
                         key="button"
                         icon={<PlusOutlined />}
                         type="primary"
+                        onClick={() => { setOpenCreateView(true) }}
                     >
                         Add new
                     </Button>,
@@ -167,6 +173,11 @@ const TableBook = () => {
                 setOpenDetailView={setOpenDetailView}
                 detailData={detailData}
                 setDetailData={setDetailData}
+            />
+            <CreateBook
+                openCreateView={openCreateView}
+                setOpenCreateView={setOpenCreateView}
+                refreshTable={refreshTable}
             />
 
 
