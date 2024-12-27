@@ -1,13 +1,15 @@
-import { getBookPaginateAPI } from "@/services/api";
+import { deleteBookAPI, getBookPaginateAPI } from "@/services/api";
 import { ExportOutlined, ImportOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns, ProTable } from "@ant-design/pro-components";
-import { Button } from "antd";
+import { Button, message, notification, Popconfirm } from "antd";
 import { useRef, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import dayjs from "dayjs";
 import DetailBook from "./detail.book";
 import CreateBook from "./create.book";
+import { CSVLink } from "react-csv";
+import UpdateBook from "./update.book";
 
 
 type TSearch = {
@@ -26,6 +28,9 @@ const TableBook = () => {
     const [openDetailView, setOpenDetailView] = useState<boolean>(false);
     const [detailData, setDetailData] = useState<IBookTable | null>(null);
     const [openCreateView, setOpenCreateView] = useState<boolean>(false);
+    const [currentData, setCurrentData] = useState<IBookTable[]>([])
+    const [openUpdateView, setOpenUpdateView] = useState<boolean>(false);
+    const [updateData, setUpdateData] = useState<IBookTable | null>(null);
     const columns: ProColumns<IBookTable>[] = [
         {
             dataIndex: 'index',
@@ -89,9 +94,15 @@ const TableBook = () => {
             hideInSearch: true,
             render(dom, entity, index, action, schema) {
                 return (
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <CiEdit />
-                        <MdDelete />
+                    <div style={{ display: 'flex', gap: '10px', cursor: 'pointer' }}>
+                        <CiEdit onClick={() => { setOpenUpdateView(true), setUpdateData(entity) }} />
+                        <Popconfirm
+                            title="Delete book"
+                            description="Are u sure delete this book"
+                            onConfirm={() => handleDeleteBook(entity._id)}
+                        >
+                            <MdDelete />
+                        </Popconfirm>
                     </div>
                 )
             },
@@ -100,6 +111,17 @@ const TableBook = () => {
     const refreshTable = () => {
         actionRef?.current?.reload();
 
+    }
+    const handleDeleteBook = async (_id: any) => {
+        const res = await deleteBookAPI(_id);
+        if (res && res.data) {
+            message.success("Delete user success");
+            refreshTable();
+        } else {
+            notification.error({
+                message: 'Error'
+            })
+        }
     }
     return (
         <>
@@ -128,7 +150,7 @@ const TableBook = () => {
                         icon={<ExportOutlined />}
                         type='primary'
                     >
-                        Export
+                        <CSVLink data={currentData} filename='export-book.csv'>Export</CSVLink>;
                     </Button>
                 ]}
                 request={async (params, sort, filter) => {
@@ -144,10 +166,11 @@ const TableBook = () => {
                     }
                     if (sort && sort.mainText) {
                         query += `&sort=${sort.mainText === 'ascend' ? "mainText" : "-mainText"}`;
-                    } else query += `&sort=-mainText`
+                    } else query += `&sort=mainText`
                     const res = await getBookPaginateAPI(query);
-                    if (res && res.data) {
+                    if (res.data) {
                         setMeta(res.data.meta);
+                        setCurrentData(res.data?.result ?? []);
                     }
                     return {
                         data: res.data?.result,
@@ -179,7 +202,14 @@ const TableBook = () => {
                 setOpenCreateView={setOpenCreateView}
                 refreshTable={refreshTable}
             />
+            <UpdateBook
+                openUpdateView={openUpdateView}
+                setOpenUpdateView={setOpenUpdateView}
+                updateData={updateData}
+                setUpdateData={setUpdateData}
+                refreshTable={refreshTable}
 
+            />
 
         </>
     )
