@@ -18,6 +18,7 @@ import ManageBookPage from './pages/admin/manageBookPage';
 import ManageOrderPage from './pages/admin/manageOrderPage';
 import ManageUserPage from './pages/admin/manageUserPage';
 import enUS from 'antd/locale/en_US';
+import BookPage from './pages/client/bookPage';
 
 const router = createBrowserRouter([
   {
@@ -26,8 +27,8 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       {
-        path: "/book",
-        element: <div>book page</div>,
+        path: "/book/:id",
+        element: <BookPage />,
       },
       {
         path: "/order",
