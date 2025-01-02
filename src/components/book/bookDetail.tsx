@@ -122,7 +122,7 @@ const BookDetail = (props: IProps) => {
                     <Col span={14}>
                         <Row>
                             <Col span={24} className="book-detail">
-                                <p className="book-detail__author">{currentBook?.author}</p>
+                                <p className="book-detail__author">Author:{currentBook?.author}</p>
                                 <p className="book-detail__mainText">{currentBook?.mainText}</p>
                                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                                     <Rate defaultValue={5} />
