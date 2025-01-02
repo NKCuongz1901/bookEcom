@@ -10,7 +10,7 @@ const BookPage = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const { notification } = App.useApp();
     const params = useParams()
-    console.log("Check params: ", params.id);
+
     const id = params.id;
     useEffect(() => {
         if (id) {

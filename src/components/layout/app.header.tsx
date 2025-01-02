@@ -13,7 +13,7 @@ import { logoutAPI } from '@/services/api';
 const AppHeader = (props: any) => {
     const [openDrawer, setOpenDrawer] = useState(false);
 
-    const { isAuthenticated, user, setUser, setIsAuthenticated } = useCurrentApp();
+    const { isAuthenticated, user, setUser, setIsAuthenticated, carts } = useCurrentApp();
 
     const navigate = useNavigate();
 
@@ -118,8 +118,8 @@ const AppHeader = (props: any) => {
                                     content={contentPopover}
                                     arrow={true}>
                                     <Badge
-                                        // count={carts?.length ?? 0}
-                                        count={10}
+                                        count={carts?.length ?? 0}
+
                                         size={"small"}
                                         showZero
                                     >
