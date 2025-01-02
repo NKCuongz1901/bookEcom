@@ -1,0 +1,69 @@
+.order-card {
+    display: flex;
+    gap: 5px;
+    background-color: white;
+    align-items: center;
+    justify-content: space-evenly;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+
+    &__thumbnail {
+        width: 80px;
+        height: 80px;
+    }
+
+    &__action {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+}
+
+.order-sum {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+
+    &__buy {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+        color: white;
+        font-size: 15px;
+        background-color: red;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+
+    .calculate {
+        display: flex;
+        justify-content: space-between;
+
+        .sum-final {
+            color: #fe3834;
+            font-size: 22px;
+            font-weight: 400;
+        }
+    }
+}
+
+.order-steps {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.payment-container {
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+}

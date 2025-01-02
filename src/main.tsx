@@ -19,6 +19,7 @@ import ManageOrderPage from './pages/admin/manageOrderPage';
 import ManageUserPage from './pages/admin/manageUserPage';
 import enUS from 'antd/locale/en_US';
 import BookPage from './pages/client/bookPage';
+import OrderPage from './pages/client/orderPage';
 
 const router = createBrowserRouter([
   {
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/order",
-        element: <div>order page</div>,
+        element: <OrderPage />
       },
       {
         path: "/checkout",
