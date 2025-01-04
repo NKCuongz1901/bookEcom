@@ -67,3 +67,14 @@
     padding: 15px;
     border-radius: 10px;
 }
+
+.calculate {
+    display: flex;
+    justify-content: space-between;
+
+    .sum-final {
+        color: #fe3834;
+        font-size: 22px;
+        font-weight: 400;
+    }
+}

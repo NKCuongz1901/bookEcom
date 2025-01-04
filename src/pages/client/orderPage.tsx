@@ -1,7 +1,8 @@
 import OrderDetail from "@/components/order/orderDetail";
 import Payment from "@/components/order/payment";
-import { Steps } from "antd";
+import { Button, Result, Steps } from "antd";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import 'styles/order.scss';
 
 const OrderPage = () => {
@@ -36,6 +37,25 @@ const OrderPage = () => {
                     {currentStep === 1 &&
                         <Payment
                             setCurrentStep={setCurrentStep}
+                        />
+                    }
+                    {currentStep === 2 &&
+                        <Result
+                            status="success"
+                            title="Successfully create order!"
+                            subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
+                            extra={[
+                                <Button key="home" >
+                                    <Link to={"/"} type="primary">
+                                        Home page
+                                    </Link>
+                                </Button>,
+                                <Button key="history">
+                                    <Link to={"/"} type="primary">
+                                        History
+                                    </Link>
+                                </Button>,
+                            ]}
                         />
                     }
                 </div>

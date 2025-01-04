@@ -1,9 +1,10 @@
 import 'styles/order.scss'
 import { useCurrentApp } from '../context/app.context';
-import { Col, Form, Input, InputNumber, Radio, Row, Space } from 'antd';
+import { App, Col, Divider, Form, Input, InputNumber, Radio, Row, Space } from 'antd';
 import { DeleteTwoTone } from '@ant-design/icons';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProps } from 'antd/lib';
+import { createOrderAPI } from '@/services/api';
 
 interface IProps {
     setCurrentStep: (v: number) => void;
@@ -18,7 +19,9 @@ type FieldType = {
 const Payment = (props: IProps) => {
     const { setCurrentStep } = props;
     const { carts, setCarts, user } = useCurrentApp();
+    const [totalPrice, setTotalPrice] = useState<number>(0);
     const [form] = Form.useForm();
+    const { notification, message } = App.useApp()
     const { TextArea } = Input
     const handleDelete = (_id: string) => {
         const cartsStorage = localStorage.getItem("carts");
@@ -37,8 +40,38 @@ const Payment = (props: IProps) => {
             })
         }
     }, [])
-    const onFinish: FormProps<FieldType>['onFinish'] = () => {
-        alert("Click me");
+    useEffect(() => {
+        if (carts && carts.length) {
+            let sum = 0;
+            carts.map(item => {
+                sum += item.quantity * item.detail.price;
+            })
+            setTotalPrice(sum);
+        } else {
+            setTotalPrice(0);
+        }
+    }, [carts])
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+        const { address, fullName, method, phone } = values;
+        const detail = carts.map(item => {
+            return {
+                bookName: item.detail.mainText,
+                quantity: item.quantity,
+                _id: item._id
+            }
+
+        })
+        const res = await createOrderAPI(fullName, address, phone, totalPrice, method, detail);
+        if (res && res.data) {
+            setCurrentStep(2);
+            setCarts([]);
+            localStorage.removeItem("carts");
+            message.success("Create order success")
+        } else {
+            notification.error({
+                message: 'Create an order fail'
+            })
+        }
     }
     return (
         <>
@@ -119,8 +152,22 @@ const Payment = (props: IProps) => {
                                     >
                                         <TextArea rows={4} />
                                     </Form.Item>
+                                    <div className='calculate'>
+                                        <span> Tạm tính: </span>
+                                        <span>
+                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice || 0)}
+                                        </span>
+                                    </div>
+                                    <Divider style={{ margin: "10px 0" }} />
+                                    <div className='calculate'>
+                                        <span>Tổng tiền: </span>
+                                        <span className='sum-final'>
+                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice || 0)}
+                                        </span>
+                                    </div>
                                     <button className='order-sum__buy'>Đặt hàng ({carts?.length ?? 0})</button>
                                 </Form>
+
                             </div>
                         </Col>
 
