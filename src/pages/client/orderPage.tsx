@@ -51,7 +51,7 @@ const OrderPage = () => {
                                     </Link>
                                 </Button>,
                                 <Button key="history">
-                                    <Link to={"/"} type="primary">
+                                    <Link to={"/history"} type="primary">
                                         History
                                     </Link>
                                 </Button>,

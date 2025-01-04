@@ -20,6 +20,7 @@ import ManageUserPage from './pages/admin/manageUserPage';
 import enUS from 'antd/locale/en_US';
 import BookPage from './pages/client/bookPage';
 import OrderPage from './pages/client/orderPage';
+import HistoryPage from './pages/client/historyPage';
 
 const router = createBrowserRouter([
   {
@@ -36,10 +37,10 @@ const router = createBrowserRouter([
         element: <OrderPage />
       },
       {
-        path: "/checkout",
+        path: "/history",
         element:
           <ProtectedRoute>
-            (<div>checkout page</div>),
+            <HistoryPage />,
           </ProtectedRoute>
       },
       {

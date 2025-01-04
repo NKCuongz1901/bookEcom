@@ -95,5 +95,21 @@ declare global {
         quantity: number;
         detail: IBookTable;
     }
+    interface IHistory {
+        _id: string;
+        name: string;
+        type: string;
+        email: string;
+        phone: string;
+        userId: string;
+        detail: {
+            bookName: string;
+            quantity: number;
+            _id: string;
+        }[];
+        totalPrice: number;
+        createAt: Date;
+        updateAt: Date;
+    }
 
 }
