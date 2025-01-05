@@ -98,3 +98,7 @@ export const getHistoryOrderAPI = () => {
     const urlBackend = "/api/v1/history";
     return axios.get<IBackendRes<IHistory[]>>(urlBackend);
 }
+export const changeInfoUserAPI = (fullName: string, phone: string, avatar: string, _id: string) => {
+    const urlBackend = "/api/v1/user";
+    return axios.put<IBackendRes<IRegister>>(urlBackend, { fullName, phone, avatar, _id })
+}

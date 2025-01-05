@@ -77,7 +77,7 @@ const TableHistory = () => {
 
     return (
         <>
-            <div>History order</div>
+
             <Table
                 columns={columns}
                 dataSource={historyData}
