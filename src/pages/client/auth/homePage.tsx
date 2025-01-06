@@ -3,10 +3,11 @@ import { Button, Checkbox, Col, Divider, Form, InputNumber, Pagination, Rate, Ro
 import './home.scss'
 import { useEffect, useState } from "react"
 import { getBookPaginateAPI, getCategoryAPI } from "@/services/api"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 
 const HomePage = () => {
     const [form] = Form.useForm()
+    const [searchTerm] = useOutletContext() as any
     const [categoryData, setCategoryData] = useState<{
         label: string;
         value: string;
@@ -48,6 +49,9 @@ const HomePage = () => {
         if (sortQuery) {
             query += `&${sortQuery}`;
         }
+        if (searchTerm) {
+            query += `&mainText=/${searchTerm}/i`;
+        }
         const res = await getBookPaginateAPI(query);
         if (res.data) {
             setListBook(res.data.result);
@@ -57,7 +61,7 @@ const HomePage = () => {
     }
     useEffect(() => {
         fetchBook();
-    }, [current, pageSize, filter, sortQuery])
+    }, [current, pageSize, filter, sortQuery, searchTerm])
     console.log('Check listbook', listBook);
     const items: TabsProps['items'] = [
         {
