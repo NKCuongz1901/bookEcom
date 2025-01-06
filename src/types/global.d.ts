@@ -111,5 +111,12 @@ declare global {
         createAt: Date;
         updateAt: Date;
     }
+    interface IOrderTable {
+        _id: string;
+        name: string;
+        address: string;
+        totalPrice: number;
+        createdAt: Date;
+    }
 
 }

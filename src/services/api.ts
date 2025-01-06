@@ -102,3 +102,11 @@ export const changeInfoUserAPI = (fullName: string, phone: string, avatar: strin
     const urlBackend = "/api/v1/user";
     return axios.put<IBackendRes<IRegister>>(urlBackend, { fullName, phone, avatar, _id })
 }
+export const changePasswordAPI = (email: string, oldpass: string, newpass: string) => {
+    const urlBackend = "/api/v1/user/change-password";
+    return axios.post<IBackendRes<IRegister>>(urlBackend, { email, oldpass, newpass });
+}
+export const getOrderPaginateAPI = (query: string) => {
+    const urlBackend = `/api/v1/order?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IOrderTable>>>(urlBackend);
+}
